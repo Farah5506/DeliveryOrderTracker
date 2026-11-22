@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Delivery Order Tracker - Login</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<header class="app-header">
+    <h1>Delivery Order Tracker</h1>
+    <p>Welcome! Please log in to continue.</p>
+</header>
+
+
+<main class="container">
+
+    <section class="panel">
+
+        <h2>Login</h2>
+
+        <form id="login-form">
+
+            <label for="email">Email Address</label>
+
+            <input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="Enter your email"
+                required
+            >
+
+
+            <label for="password">Password</label>
+
+            <input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Enter your password"
+                required
+            >
+
+
+            <button type="submit">Login</button>
+
+        </form>
+
+        <p id="login-message" aria-live="polite"></p>
+
+    </section>
+
+</main>
+
+
+<script src="js/config.js" defer></script>
+<script src="js/login.js" defer></script>
+
+</body>
+</html>
