@@ -11,7 +11,7 @@ body {
 }
 
 .app-header {
-    background-color: #2878b5;
+    background-color: #6d1e1e;
     color: white;
     text-align: center;
     padding: 25px;
@@ -41,7 +41,7 @@ body {
 }
 
 .panel h2 {
-    color: #2878b5;
+    color: #b50505;
     margin-top: 0;
     margin-bottom: 20px;
 }
@@ -66,14 +66,14 @@ select {
 input:focus,
 select:focus {
     outline: none;
-    border-color: #2878b5;
+    border-color: #911d4b;
 }
 
 
 button {
     width: 100%;
     padding: 12px;
-    background-color: #2878b5;
+    background-color: #6d1e1e;
     color: white;
     border: none;
     border-radius: 6px;
@@ -82,7 +82,7 @@ button {
 }
 
 button:hover {
-    background-color: #1d5f91;
+    background-color: #911d4b;
 }
 
 
