@@ -1,80 +1,114 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delivery Order Tracker - Track Order</title>
-    <link rel="stylesheet" href="css/style.css">
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
-</head>
+const issueForm = document.querySelector('#issue-form');
+const titleInput = document.querySelector('#title');
+const descriptionInput = document.querySelector('#description');
+const priorityInput = document.querySelector('#priority');
+const issuesList = document.querySelector('#issues-list');
+const issueCount = document.querySelector('#issue-count');
+const formMessage = document.querySelector('#form-message');
 
-<body>
+async function apiRequest(url, options = {}) {
+  const response = await fetch(url, options);
 
-<header class="app-header">
-    <h1>Delivery Order Tracker</h1>
-    <p>Enter your order number to see where your delivery is.</p>
+  let body = null;
+  const contentType = response.headers.get('content-type') || '';
+  if (contentType.includes('application/json')) {
+    body = await response.json();
+  }
 
-    <nav class="app-nav">
-        <a href="index.html" class="active">Track Order</a>
-        <a href="login.html">Staff Login</a>
-    </nav>
-</header>
+  if (!response.ok) {
+    const message = body?.error?.message || `Request failed (${response.status})`;
+    throw new Error(message);
+  }
 
+  return body;
+}
 
-<main class="container narrow">
+function renderIssues(issues) {
+  issuesList.replaceChildren();
+  issueCount.textContent = issues.length;
 
-    <section class="panel">
+  issues.forEach((issue) => {
+    const card = document.createElement('article');
+    card.className = 'issue-card';
 
-        <h2>Track Your Order</h2>
+    const heading = document.createElement('h3');
+    heading.textContent = issue.title;
 
-        <form id="track-form">
+    const description = document.createElement('p');
+    description.textContent = issue.description;
 
-            <label for="order-number">Order Number</label>
-            <input
-                id="order-number"
-                name="orderNumber"
-                type="text"
-                placeholder="e.g. DOT-7K3P9Q"
-                maxlength="10"
-                autocomplete="off"
-                required
-            >
+    const meta = document.createElement('p');
+    meta.textContent = `Priority: ${issue.priority} | Status: ${issue.status}`;
 
-            <div id="turnstile-widget" class="cf-turnstile"></div>
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = issue.status === 'Open' ? 'Mark Resolved' : 'Reopen';
+    button.addEventListener('click', () => changeIssueStatus(issue));
 
-            <button type="submit">Track</button>
+    card.append(heading, description, meta, button);
+    issuesList.append(card);
+  });
+}
 
-        </form>
+async function loadIssues() {
+  try {
+    formMessage.textContent = 'Loading issues...';
+    const issues = await apiRequest(API_BASE_URL);
+    renderIssues(issues);
+    formMessage.textContent = '';
+  } catch (error) {
+    console.error(error);
+    formMessage.textContent = `Could not load issues: ${error.message}`;
+  }
+}
 
-        <p id="track-message" aria-live="polite"></p>
+issueForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
 
-    </section>
+  const payload = {
+    title: titleInput.value.trim(),
+    description: descriptionInput.value.trim(),
+    priority: priorityInput.value
+  };
 
+  try {
+    formMessage.textContent = 'Submitting issue...';
 
-    <section id="tracking-loading" class="panel hidden">
-        <div class="loading">Loading...</div>
-    </section>
+    await apiRequest(API_BASE_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
 
+    issueForm.reset();
+    priorityInput.value = 'Medium';
+    await loadIssues();
+    formMessage.textContent = 'Issue created successfully.';
+  } catch (error) {
+    console.error(error);
+    formMessage.textContent = `Could not create issue: ${error.message}`;
+  }
+});
 
-    <section id="tracking-result" class="panel tracking-result hidden">
+async function changeIssueStatus(issue) {
+  const nextStatus = issue.status === 'Open' ? 'Resolved' : 'Open';
 
-        <h2>Order <span id="result-order-number" class="order-number"></span></h2>
+  try {
+    await apiRequest(`${API_BASE_URL}/${issue.id}/status`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ status: nextStatus })
+    });
 
-        <span id="result-status" class="badge"></span>
+    await loadIssues();
+  } catch (error) {
+    console.error(error);
+    formMessage.textContent = `Could not update issue: ${error.message}`;
+  }
+}
 
-        <p id="result-updated" class="muted"></p>
-
-        <h3>Timeline</h3>
-        <ol id="status-timeline" class="timeline"></ol>
-
-    </section>
-
-</main>
-
-
-<script src="js/config.js" defer></script>
-<script src="js/api.js" defer></script>
-<script src="js/tracking.js" defer></script>
-
-</body>
-</html>
+loadIssues();
