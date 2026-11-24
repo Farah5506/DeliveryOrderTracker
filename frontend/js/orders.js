@@ -19,7 +19,6 @@
 
     const PHONE_PATTERN = /^\+?[0-9]{10,15}$/;
 
-    // Same rules the API enforces (the API is the real check).
     const EDITABLE = ["created", "assigned"];
     const CANCELLABLE = ["created", "assigned"];
     const ASSIGNABLE = ["created", "assigned", "failed"];
@@ -27,8 +26,6 @@
     const FIELDS = ["customerName", "customerPhone", "pickupAddress",
                     "deliveryAddress", "packageDetails", "notes"];
 
-
-    // ---------- helpers ----------
 
     function readOrderForm(form) {
         return {
@@ -78,8 +75,6 @@
     }
 
 
-    // ---------- create order ----------
-
     orderForm.addEventListener("submit", async function (event) {
         event.preventDefault();
         clearMessage(orderFormMessage);
@@ -113,8 +108,6 @@
     });
 
 
-    // ---------- list, search and filter ----------
-
     async function loadCourierFilter() {
         try {
             const data = await apiRequest("/api/couriers");
@@ -125,7 +118,6 @@
                 courierFilter.appendChild(option);
             });
         } catch (err) {
-            // The other filters still work without the courier list.
         }
     }
 
@@ -210,18 +202,13 @@
     });
 
     filterForm.addEventListener("reset", function () {
-        // the form clears its fields after this event, so reload right after
         setTimeout(loadOrders, 0);
     });
 
-    // assignment.js fires this after an assign or unassign
     document.addEventListener("orders:changed", function () {
         showMessage(ordersMessage, "Courier assignment updated.", "success");
         loadOrders();
     });
-
-
-    // ---------- view details + status history ----------
 
     function fillDetail(order) {
         setText("detail-order-number", order.orderNumber);
@@ -294,7 +281,6 @@
             showError(detailMessage, err);
         }
 
-        // Status history comes from the Delivery Status & Tracking service (S3).
         try {
             const data = await apiRequest("/api/deliveries/" + encodeURIComponent(order.id) + "/history");
             renderHistory(data.history || []);
@@ -303,8 +289,6 @@
         }
     }
 
-
-    // ---------- edit (only before pickup) ----------
 
     function openEdit(order) {
         clearMessage(editMessage);
@@ -345,8 +329,6 @@
         }
     });
 
-
-    // ---------- cancel (soft delete) ----------
 
     async function cancelOrder(order) {
         if (!window.confirm("Cancel order " + order.orderNumber + "? This cannot be undone.")) return;

@@ -64,7 +64,6 @@
         event.preventDefault();
         clearMessage(assignMessage);
 
-        // Courier ids are strings (DynamoDB), so keep the value as text.
         const courierId = assignSelect.value;
         if (!courierId) {
             showMessage(assignMessage, "Please choose a courier.", "error");

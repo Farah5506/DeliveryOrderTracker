@@ -1,4 +1,3 @@
-/* Delivery Order Tracker - shared styles (team colours + layout for all pages) */
 
 * {
     box-sizing: border-box;
@@ -26,7 +25,6 @@ a {
 }
 
 
-/* ---------- header and navigation ---------- */
 
 .app-header {
     background-color: #6d1e1e;
@@ -82,8 +80,6 @@ a {
 }
 
 
-/* ---------- layout ---------- */
-
 .container {
     width: 90%;
     max-width: 650px;
@@ -133,7 +129,6 @@ a {
 }
 
 
-/* ---------- forms ---------- */
 
 label {
     display: block;
@@ -180,8 +175,6 @@ textarea:focus {
 }
 
 
-/* ---------- buttons ---------- */
-
 button {
     width: 100%;
     padding: 12px;
@@ -202,7 +195,6 @@ button:disabled {
     cursor: not-allowed;
 }
 
-/* small buttons (tables, filters, modal headers) keep their natural width */
 .btn-small,
 .btn-group button,
 .filters button {
@@ -274,7 +266,6 @@ button:disabled {
 }
 
 
-/* ---------- messages (showMessage sets the class) ---------- */
 
 #form-message,
 #login-message {
@@ -321,7 +312,6 @@ button:disabled {
 }
 
 
-/* ---------- tables ---------- */
 
 #couriers-list {
     margin-top: 15px;
@@ -356,7 +346,6 @@ tbody tr:hover {
 }
 
 
-/* ---------- badges ---------- */
 
 .badge {
     display: inline-block;
@@ -382,7 +371,6 @@ tbody tr:hover {
 .status-cancelled { background-color: #f0f0f0; color: #666; }
 
 
-/* ---------- cards (courier deliveries) ---------- */
 
 .card-list {
     display: grid;
@@ -439,7 +427,6 @@ dd {
 }
 
 
-/* ---------- status timeline (tracking page + order details) ---------- */
 
 .timeline,
 #status-timeline {
@@ -480,7 +467,6 @@ dd {
 }
 
 
-/* ---------- modals (edit, assign, failed, details) ---------- */
 
 .modal {
     display: none;
