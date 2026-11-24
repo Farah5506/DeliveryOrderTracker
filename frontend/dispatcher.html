@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Order Tracker - Orders</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<header class="app-header">
+    <h1>Delivery Order Tracker</h1>
+    <p>Hello, <span id="user-name"></span>. Create orders and assign couriers.</p>
+
+    <nav class="app-nav">
+        <a href="dispatcher.html" class="active">Orders</a>
+        <a href="couriers.html">Couriers</a>
+        <button type="button" id="logout-button">Logout</button>
+    </nav>
+</header>
+
+
+<main class="container two-col">
+
+    <section class="panel">
+
+        <h2>Create Delivery Order</h2>
+
+        <form id="order-form">
+
+            <label for="customer-name">Customer Name</label>
+            <input id="customer-name" name="customerName" type="text"
+                   placeholder="Enter customer name" minlength="2" required>
+
+            <label for="customer-phone">Customer Phone</label>
+            <input id="customer-phone" name="customerPhone" type="tel"
+                   placeholder="e.g. 01012345678" required>
+
+            <label for="pickup-address">Pickup Address</label>
+            <input id="pickup-address" name="pickupAddress" type="text"
+                   placeholder="Where the courier collects the package" minlength="5" required>
+
+            <label for="delivery-address">Delivery Address</label>
+            <input id="delivery-address" name="deliveryAddress" type="text"
+                   placeholder="Street, area, city" minlength="5" required>
+
+            <label for="package-details">Package Details</label>
+            <input id="package-details" name="packageDetails" type="text"
+                   placeholder="e.g. 2 boxes, fragile" minlength="2" required>
+
+            <label for="priority">Priority</label>
+            <select id="priority" name="priority" required>
+                <option value="standard">Standard</option>
+                <option value="express">Express</option>
+            </select>
+
+            <label for="notes">Notes (optional)</label>
+            <textarea id="notes" name="notes" maxlength="500"
+                      placeholder="e.g. call before arriving"></textarea>
+
+            <button type="submit">Create Order</button>
+
+        </form>
+
+        <p id="order-form-message" aria-live="polite"></p>
+
+    </section>
+
+
+    <section class="panel">
+
+        <div class="panel-header">
+            <h2>Orders</h2>
+            <span class="muted">Showing: <span id="order-count">0</span></span>
+        </div>
+
+        <form id="order-filter-form" class="filters">
+
+            <input id="order-search" name="q" type="search"
+                   placeholder="Order number or customer">
+
+            <select id="order-status-filter" name="status">
+                <option value="">All statuses</option>
+                <option value="created">Created</option>
+                <option value="assigned">Assigned</option>
+                <option value="picked_up">Picked up</option>
+                <option value="on_the_way">On the way</option>
+                <option value="delivered">Delivered</option>
+                <option value="failed">Failed</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+
+            <select id="order-courier-filter" name="courierId">
+                <option value="">All couriers</option>
+            </select>
+
+            <input id="order-date-filter" name="date" type="date">
+
+            <button type="submit" class="btn-small">Filter</button>
+            <button type="reset" class="btn-small btn-secondary">Clear</button>
+
+        </form>
+
+        <div id="orders-loading" class="loading hidden">Loading orders...</div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Deliver to</th>
+                        <th>Status</th>
+                        <th>Courier</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-list">
+                </tbody>
+            </table>
+        </div>
+
+        <p id="orders-empty" class="empty-state hidden">No orders match these filters.</p>
+
+        <p id="orders-message" aria-live="polite"></p>
+
+    </section>
+
+</main>
+
+
+<div id="order-detail-modal" class="modal">
+    <div class="modal-content">
+
+        <div class="panel-header">
+            <h2>Order <span id="detail-order-number" class="order-number"></span></h2>
+            <button type="button" class="btn-small btn-secondary" data-close="order-detail-modal">Close</button>
+        </div>
+
+        <dl class="details">
+            <dt>Status</dt>
+            <dd><span id="detail-status" class="badge"></span></dd>
+
+            <dt>Customer</dt>
+            <dd id="detail-customer"></dd>
+
+            <dt>Phone</dt>
+            <dd id="detail-phone"></dd>
+
+            <dt>Pickup</dt>
+            <dd id="detail-pickup"></dd>
+
+            <dt>Deliver to</dt>
+            <dd>
+                <span id="detail-delivery"></span>
+                <span id="detail-verified" class="muted"></span>
+            </dd>
+
+            <dt>Package</dt>
+            <dd id="detail-package"></dd>
+
+            <dt>Priority</dt>
+            <dd id="detail-priority"></dd>
+
+            <dt>Notes</dt>
+            <dd id="detail-notes"></dd>
+
+            <dt>Courier</dt>
+            <dd id="detail-courier"></dd>
+
+            <dt>Created</dt>
+            <dd id="detail-created"></dd>
+        </dl>
+
+        <a id="detail-map" class="map-link" href="#" target="_blank" rel="noopener">Open on map</a>
+
+        <h3>Status history</h3>
+        <ol id="detail-history" class="timeline"></ol>
+
+        <p id="detail-message" aria-live="polite"></p>
+
+    </div>
+</div>
+
+
+<div id="order-edit-modal" class="modal">
+    <div class="modal-content">
+
+        <div class="panel-header">
+            <h2>Edit Order <span id="edit-order-number" class="order-number"></span></h2>
+            <button type="button" class="btn-small btn-secondary" data-close="order-edit-modal">Close</button>
+        </div>
+
+        <form id="order-edit-form">
+
+            <input id="edit-order-id" name="orderId" type="hidden">
+
+            <label for="edit-customer-name">Customer Name</label>
+            <input id="edit-customer-name" name="customerName" type="text" minlength="2" required>
+
+            <label for="edit-customer-phone">Customer Phone</label>
+            <input id="edit-customer-phone" name="customerPhone" type="tel" required>
+
+            <label for="edit-pickup-address">Pickup Address</label>
+            <input id="edit-pickup-address" name="pickupAddress" type="text" minlength="5" required>
+
+            <label for="edit-delivery-address">Delivery Address</label>
+            <input id="edit-delivery-address" name="deliveryAddress" type="text" minlength="5" required>
+
+            <label for="edit-package-details">Package Details</label>
+            <input id="edit-package-details" name="packageDetails" type="text" minlength="2" required>
+
+            <label for="edit-priority">Priority</label>
+            <select id="edit-priority" name="priority" required>
+                <option value="standard">Standard</option>
+                <option value="express">Express</option>
+            </select>
+
+            <label for="edit-notes">Notes</label>
+            <textarea id="edit-notes" name="notes" maxlength="500"></textarea>
+
+            <button type="submit">Save Changes</button>
+
+        </form>
+
+        <p id="edit-order-message" aria-live="polite"></p>
+
+    </div>
+</div>
+
+
+<div id="assign-modal" class="modal">
+    <div class="modal-content">
+
+        <div class="panel-header">
+            <h2>Assign Courier: <span id="assign-order-number" class="order-number"></span></h2>
+            <button type="button" class="btn-small btn-secondary" data-close="assign-modal">Close</button>
+        </div>
+
+        <form id="assign-form">
+
+            <input id="assign-order-id" name="orderId" type="hidden">
+
+            <label for="assign-courier">Available couriers</label>
+            <select id="assign-courier" name="courierId" required>
+                <option value="">Select courier</option>
+            </select>
+
+            <div class="btn-group">
+                <button type="submit">Assign</button>
+                <button type="button" id="unassign-button" class="btn-danger hidden">Unassign current courier</button>
+            </div>
+
+        </form>
+
+        <p id="assign-message" aria-live="polite"></p>
+
+    </div>
+</div>
+
+
+<script src="js/config.js" defer></script>
+<script src="js/api.js" defer></script>
+<script src="js/auth.js" defer></script>
+<script src="js/assignment.js" defer></script>
+<script src="js/orders.js" defer></script>
+
+</body>
+</html>

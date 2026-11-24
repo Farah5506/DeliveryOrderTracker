@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Order Tracker - My Deliveries</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<header class="app-header">
+    <h1>My Deliveries</h1>
+    <p>Hello, <span id="user-name"></span></p>
+
+    <nav class="app-nav">
+        <button type="button" id="refresh-button">Refresh</button>
+        <button type="button" id="logout-button">Logout</button>
+    </nav>
+</header>
+
+
+<main class="container narrow">
+
+    <p id="deliveries-message" aria-live="polite"></p>
+
+    <div id="deliveries-loading" class="loading hidden">Loading your deliveries...</div>
+
+    <section id="deliveries-list" class="card-list">
+    </section>
+
+    <p id="deliveries-empty" class="empty-state hidden">You have no active deliveries.</p>
+
+</main>
+
+
+<template id="delivery-card-template">
+    <article class="card">
+
+        <div class="card-header">
+            <h3 class="order-number"></h3>
+            <span class="badge"></span>
+        </div>
+
+        <dl>
+            <dt>Customer</dt>
+            <dd class="card-customer"></dd>
+
+            <dt>Phone</dt>
+            <dd><a class="card-phone" href="#"></a></dd>
+
+            <dt>Pickup</dt>
+            <dd class="card-pickup"></dd>
+
+            <dt>Deliver to</dt>
+            <dd class="card-delivery"></dd>
+
+            <dt>Package</dt>
+            <dd class="card-package"></dd>
+
+            <dt>Priority</dt>
+            <dd class="card-priority"></dd>
+
+            <dt>Notes</dt>
+            <dd class="card-notes"></dd>
+        </dl>
+
+        <a class="map-link" href="#" target="_blank" rel="noopener">Open on map</a>
+
+        <div class="btn-group">
+            <button type="button" class="btn-pickup" data-status="picked_up">Picked up</button>
+            <button type="button" class="btn-onway" data-status="on_the_way">On the way</button>
+            <button type="button" class="btn-success btn-delivered" data-status="delivered">Delivered</button>
+            <button type="button" class="btn-danger btn-failed" data-status="failed">Failed</button>
+        </div>
+
+    </article>
+</template>
+
+
+<div id="failed-modal" class="modal">
+    <div class="modal-content">
+
+        <h2>Delivery Failed</h2>
+        <p>Order <span id="failed-order-number" class="order-number"></span></p>
+
+        <form id="failed-form">
+
+            <input id="failed-order-id" name="orderId" type="hidden">
+
+            <label for="failed-reason">Reason</label>
+            <textarea
+                id="failed-reason"
+                name="note"
+                placeholder="e.g. customer not answering, wrong address"
+                minlength="3"
+                required
+            ></textarea>
+
+            <div class="btn-group">
+                <button type="submit" class="btn-danger">Mark as Failed</button>
+                <button type="button" class="btn-secondary" data-close="failed-modal">Cancel</button>
+            </div>
+
+        </form>
+
+        <p id="failed-message" aria-live="polite"></p>
+
+    </div>
+</div>
+
+
+<script src="js/config.js" defer></script>
+<script src="js/api.js" defer></script>
+<script src="js/auth.js" defer></script>
+<script src="js/deliveries.js" defer></script>
+
+</body>
+</html>
