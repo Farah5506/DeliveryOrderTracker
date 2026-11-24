@@ -1,0 +1,228 @@
+@baseUrl = http://localhost:3000
+@bot = XXXX.DUMMY.TOKEN.XXXX
+
+# @name dispatcherLogin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "dispatcher@dot.test", "password": "Dispatcher123", "turnstileToken": "{{bot}}" }
+
+###
+@D = {{dispatcherLogin.response.body.token}}
+
+
+############################ SHARED / LOGIN (Malak) ############################
+
+###
+GET {{baseUrl}}/api/health
+
+###
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "dispatcher@dot.test", "password": "wrong-password", "turnstileToken": "{{bot}}" }
+
+###
+GET {{baseUrl}}/api/orders
+
+###
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{D}}
+
+
+############################ S1 ORDER MANAGEMENT (Meret) ############################
+
+###
+# @name newOrder
+POST {{baseUrl}}/api/orders
+Authorization: Bearer {{D}}
+Content-Type: application/json
+
+{
+  "customerName": "Ahmed Ali",
+  "customerPhone": "01012345678",
+  "pickupAddress": "Cairo Festival City Mall, New Cairo",
+  "deliveryAddress": "Tahrir Square, Cairo",
+  "packageDetails": "2 boxes",
+  "priority": "standard",
+  "notes": "Call before arriving"
+}
+
+###
+@orderId = {{newOrder.response.body.order.id}}
+
+###
+POST {{baseUrl}}/api/orders
+Authorization: Bearer {{D}}
+Content-Type: application/json
+
+{ "customerName": "A", "customerPhone": "123", "pickupAddress": "", "deliveryAddress": "Tahrir Square, Cairo", "packageDetails": "Box", "priority": "urgent" }
+
+###
+POST {{baseUrl}}/api/orders
+Authorization: Bearer {{D}}
+Content-Type: text/plain
+
+hello
+
+###
+GET {{baseUrl}}/api/orders?status=created&q=ahmed
+Authorization: Bearer {{D}}
+
+###
+GET {{baseUrl}}/api/orders/DOT-ZZZZZZ
+Authorization: Bearer {{D}}
+
+###
+PATCH {{baseUrl}}/api/orders/{{orderId}}
+Authorization: Bearer {{D}}
+Content-Type: application/json
+
+{
+  "customerName": "Ahmed Ali",
+  "customerPhone": "01012345678",
+  "pickupAddress": "Cairo Festival City Mall, New Cairo",
+  "deliveryAddress": "Tahrir Square, Cairo",
+  "packageDetails": "3 boxes",
+  "priority": "express",
+  "notes": "Call before arriving"
+}
+
+
+############################ S2 COURIERS & ASSIGNMENT (Malak) ############################
+
+###
+# @name newCourier
+POST {{baseUrl}}/api/couriers
+Authorization: Bearer {{D}}
+Content-Type: application/json
+
+{ "fullName": "Mona Hassan", "email": "mona@dot.test", "password": "Courier123", "phone": "01098765432", "vehicleType": "motorcycle" }
+
+###
+@courierId = {{newCourier.response.body.courier.id}}
+
+###
+POST {{baseUrl}}/api/couriers
+Authorization: Bearer {{D}}
+Content-Type: application/json
+
+{ "fullName": "Mona Again", "email": "mona@dot.test", "password": "Courier123", "phone": "01098765432", "vehicleType": "car" }
+
+###
+GET {{baseUrl}}/api/couriers?availability=available
+Authorization: Bearer {{D}}
+
+###
+PATCH {{baseUrl}}/api/orders/{{orderId}}/assignment
+Authorization: Bearer {{D}}
+Content-Type: application/json
+
+{ "courierId": "{{courierId}}" }
+
+###
+PATCH {{baseUrl}}/api/orders/{{orderId}}/assignment
+Authorization: Bearer {{D}}
+Content-Type: application/json
+
+{ "courierId": "c-doesnotexist" }
+
+###
+PATCH {{baseUrl}}/api/couriers/{{courierId}}
+Authorization: Bearer {{D}}
+Content-Type: application/json
+
+{ "availability": "off_duty" }
+
+###
+PATCH {{baseUrl}}/api/orders/{{orderId}}/assignment
+Authorization: Bearer {{D}}
+Content-Type: application/json
+
+{ "courierId": "{{courierId}}" }
+
+###
+PATCH {{baseUrl}}/api/couriers/{{courierId}}
+Authorization: Bearer {{D}}
+Content-Type: application/json
+
+{ "availability": "available" }
+
+
+############################ S3 DELIVERY & TRACKING (Farah) ############################
+
+###
+# @name courierLogin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "mona@dot.test", "password": "Courier123", "turnstileToken": "{{bot}}" }
+
+###
+@C = {{courierLogin.response.body.token}}
+
+###
+GET {{baseUrl}}/api/deliveries
+Authorization: Bearer {{C}}
+
+###
+GET {{baseUrl}}/api/orders
+Authorization: Bearer {{C}}
+
+###
+PATCH {{baseUrl}}/api/deliveries/{{orderId}}/status
+Authorization: Bearer {{C}}
+Content-Type: application/json
+
+{ "status": "delivered" }
+
+###
+PATCH {{baseUrl}}/api/deliveries/{{orderId}}/status
+Authorization: Bearer {{C}}
+Content-Type: application/json
+
+{ "status": "picked_up" }
+
+###
+PATCH {{baseUrl}}/api/orders/{{orderId}}/cancel
+Authorization: Bearer {{D}}
+
+###
+PATCH {{baseUrl}}/api/deliveries/{{orderId}}/status
+Authorization: Bearer {{C}}
+Content-Type: application/json
+
+{ "status": "failed", "note": "" }
+
+###
+PATCH {{baseUrl}}/api/deliveries/{{orderId}}/status
+Authorization: Bearer {{C}}
+Content-Type: application/json
+
+{ "status": "on_the_way" }
+
+###
+PATCH {{baseUrl}}/api/deliveries/{{orderId}}/status
+Authorization: Bearer {{C}}
+Content-Type: application/json
+
+{ "status": "delivered" }
+
+###
+GET {{baseUrl}}/api/deliveries/{{orderId}}/history
+Authorization: Bearer {{D}}
+
+###
+GET {{baseUrl}}/api/track/{{orderId}}?turnstileToken={{bot}}
+
+###
+GET {{baseUrl}}/api/track/DOT-ZZZZZZ?turnstileToken={{bot}}
+
+###
+GET {{baseUrl}}/api/track/hello?turnstileToken={{bot}}
+
+
+############################ API GATEWAY (Farah) ############################
+
+###
+DELETE {{baseUrl}}/api/orders
