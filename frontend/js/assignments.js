@@ -1,4 +1,3 @@
-
 (function () {
 
     const assignForm = document.getElementById("assign-form");
@@ -10,6 +9,10 @@
 
     function ordersChanged() {
         document.dispatchEvent(new Event("orders:changed"));
+    }
+
+    function assignmentPath(order) {
+        return "/api/orders/" + encodeURIComponent(order.id) + "/assignment";
     }
 
     async function openAssignModal(order) {
@@ -61,14 +64,15 @@
         event.preventDefault();
         clearMessage(assignMessage);
 
-        const courierId = Number(assignSelect.value);
+        // Courier ids are strings (DynamoDB), so keep the value as text.
+        const courierId = assignSelect.value;
         if (!courierId) {
             showMessage(assignMessage, "Please choose a courier.", "error");
             return;
         }
 
         try {
-            await apiRequest("/api/orders/" + currentOrder.id + "/assignment", {
+            await apiRequest(assignmentPath(currentOrder), {
                 method: "PATCH",
                 body: { courierId: courierId }
             });
@@ -84,7 +88,7 @@
         clearMessage(assignMessage);
 
         try {
-            await apiRequest("/api/orders/" + currentOrder.id + "/assignment", { method: "DELETE" });
+            await apiRequest(assignmentPath(currentOrder), { method: "DELETE" });
             closeModal("assign-modal");
             ordersChanged();
         } catch (err) {
