@@ -1,0 +1,17 @@
+{
+  "version": "2.0",
+  "rawPath": "/api/track/DOT-ZZZZZZ",
+  "rawQueryString": "turnstileToken=XXXX.DUMMY.TOKEN.XXXX",
+  "headers": {},
+  "queryStringParameters": {
+    "turnstileToken": "XXXX.DUMMY.TOKEN.XXXX"
+  },
+  "requestContext": {
+    "http": {
+      "method": "GET",
+      "path": "/api/track/DOT-ZZZZZZ",
+      "sourceIp": "127.0.0.1"
+    }
+  },
+  "isBase64Encoded": false
+}
