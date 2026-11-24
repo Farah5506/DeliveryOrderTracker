@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delivery Order Tracker - Dispatcher</title>
+    <title>Delivery Order Tracker - Orders</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -11,7 +11,7 @@
 
 <header class="app-header">
     <h1>Delivery Order Tracker</h1>
-    <p>Dispatcher dashboard: <span id="user-name"></span></p>
+    <p>Hello, <span id="user-name"></span>. Create orders and assign couriers.</p>
 
     <nav class="app-nav">
         <a href="dispatcher.html" class="active">Orders</a>
@@ -21,142 +21,66 @@
 </header>
 
 
-<main class="container">
+<main class="container two-col">
 
-    
-    <section class="stats">
-        <div class="stat">
-            <span class="stat-value" id="count-created">0</span>
-            <span class="stat-label">Created</span>
-        </div>
-        <div class="stat">
-            <span class="stat-value" id="count-assigned">0</span>
-            <span class="stat-label">Assigned</span>
-        </div>
-        <div class="stat">
-            <span class="stat-value" id="count-picked_up">0</span>
-            <span class="stat-label">Picked up</span>
-        </div>
-        <div class="stat">
-            <span class="stat-value" id="count-on_the_way">0</span>
-            <span class="stat-label">On the way</span>
-        </div>
-        <div class="stat">
-            <span class="stat-value" id="count-delivered">0</span>
-            <span class="stat-label">Delivered</span>
-        </div>
-        <div class="stat">
-            <span class="stat-value" id="count-failed">0</span>
-            <span class="stat-label">Failed</span>
-        </div>
-        <div class="stat">
-            <span class="stat-value" id="count-cancelled">0</span>
-            <span class="stat-label">Cancelled</span>
-        </div>
-    </section>
-
-
-    
     <section class="panel">
 
         <h2>Create Delivery Order</h2>
 
         <form id="order-form">
 
-            <div class="form-row">
-                <div>
-                    <label for="customer-name">Customer Name</label>
-                    <input
-                        id="customer-name"
-                        name="customerName"
-                        type="text"
-                        placeholder="Enter customer name"
-                        minlength="2"
-                        required
-                    >
-                </div>
+            <label for="customer-name">Customer Name</label>
+            <input id="customer-name" name="customerName" type="text"
+                   placeholder="Enter customer name" minlength="2" required>
 
-                <div>
-                    <label for="customer-phone">Customer Phone</label>
-                    <input
-                        id="customer-phone"
-                        name="customerPhone"
-                        type="tel"
-                        placeholder="e.g. 01012345678"
-                        required
-                    >
-                </div>
-            </div>
+            <label for="customer-phone">Customer Phone</label>
+            <input id="customer-phone" name="customerPhone" type="tel"
+                   placeholder="e.g. 01012345678" required>
 
             <label for="pickup-address">Pickup Address</label>
-            <input
-                id="pickup-address"
-                name="pickupAddress"
-                type="text"
-                placeholder="Where the courier collects the package"
-                required
-            >
+            <input id="pickup-address" name="pickupAddress" type="text"
+                   placeholder="Where the courier collects the package" minlength="5" required>
 
             <label for="delivery-address">Delivery Address</label>
-            <input
-                id="delivery-address"
-                name="deliveryAddress"
-                type="text"
-                placeholder="Street, area, city"
-                required
-            >
+            <input id="delivery-address" name="deliveryAddress" type="text"
+                   placeholder="Street, area, city" minlength="5" required>
 
-            <div class="form-row">
-                <div>
-                    <label for="package-details">Package Details</label>
-                    <input
-                        id="package-details"
-                        name="packageDetails"
-                        type="text"
-                        placeholder="e.g. 2 boxes, medicine"
-                        required
-                    >
-                </div>
+            <label for="package-details">Package Details</label>
+            <input id="package-details" name="packageDetails" type="text"
+                   placeholder="e.g. 2 boxes, fragile" minlength="2" required>
 
-                <div>
-                    <label for="priority">Priority</label>
-                    <select id="priority" name="priority" required>
-                        <option value="standard">Standard</option>
-                        <option value="express">Express</option>
-                    </select>
-                </div>
-            </div>
+            <label for="priority">Priority</label>
+            <select id="priority" name="priority" required>
+                <option value="standard">Standard</option>
+                <option value="express">Express</option>
+            </select>
 
             <label for="notes">Notes (optional)</label>
-            <textarea id="notes" name="notes" placeholder="Any extra instructions"></textarea>
+            <textarea id="notes" name="notes" maxlength="500"
+                      placeholder="e.g. call before arriving"></textarea>
 
             <button type="submit">Create Order</button>
 
         </form>
 
-        <p id="form-message" aria-live="polite"></p>
+        <p id="order-form-message" aria-live="polite"></p>
 
     </section>
 
 
-    
     <section class="panel">
 
         <div class="panel-header">
             <h2>Orders</h2>
-            <span class="muted">Total: <span id="order-count">0</span></span>
+            <span class="muted">Showing: <span id="order-count">0</span></span>
         </div>
 
-        <form id="filter-form" class="filters">
+        <form id="order-filter-form" class="filters">
 
-            <input
-                id="filter-search"
-                name="q"
-                type="search"
-                placeholder="Search by order number or customer"
-            >
+            <input id="order-search" name="q" type="search"
+                   placeholder="Order number or customer">
 
-            <select id="filter-status" name="status">
+            <select id="order-status-filter" name="status">
                 <option value="">All statuses</option>
                 <option value="created">Created</option>
                 <option value="assigned">Assigned</option>
@@ -167,13 +91,14 @@
                 <option value="cancelled">Cancelled</option>
             </select>
 
-            <select id="filter-courier" name="courierId">
+            <select id="order-courier-filter" name="courierId">
                 <option value="">All couriers</option>
             </select>
 
-            <input id="filter-date" name="date" type="date">
+            <input id="order-date-filter" name="date" type="date">
 
             <button type="submit" class="btn-small">Filter</button>
+            <button type="reset" class="btn-small btn-secondary">Clear</button>
 
         </form>
 
@@ -183,93 +108,94 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Order No.</th>
+                        <th>Order #</th>
                         <th>Customer</th>
-                        <th>Delivery Address</th>
-                        <th>Priority</th>
+                        <th>Deliver to</th>
                         <th>Status</th>
                         <th>Courier</th>
                         <th>Created</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody id="orders-table-body">
+                <tbody id="orders-list">
                 </tbody>
             </table>
         </div>
 
-        <p id="orders-empty" class="empty-state hidden">No orders found.</p>
+        <p id="orders-empty" class="empty-state hidden">No orders match these filters.</p>
 
-        <p id="list-message" aria-live="polite"></p>
+        <p id="orders-message" aria-live="polite"></p>
 
     </section>
 
 </main>
 
 
-<div id="details-modal" class="modal">
+<div id="order-detail-modal" class="modal">
     <div class="modal-content">
 
         <div class="panel-header">
-            <h2>Order <span id="details-order-number" class="order-number"></span></h2>
-            <button type="button" class="btn-small btn-secondary" data-close="details-modal">Close</button>
+            <h2>Order <span id="detail-order-number" class="order-number"></span></h2>
+            <button type="button" class="btn-small btn-secondary" data-close="order-detail-modal">Close</button>
         </div>
 
-        <span id="details-status" class="badge"></span>
+        <dl class="details">
+            <dt>Status</dt>
+            <dd><span id="detail-status" class="badge"></span></dd>
 
-        <div class="card">
-            <dl>
-                <dt>Customer</dt>
-                <dd id="details-customer"></dd>
+            <dt>Customer</dt>
+            <dd id="detail-customer"></dd>
 
-                <dt>Phone</dt>
-                <dd id="details-phone"></dd>
+            <dt>Phone</dt>
+            <dd id="detail-phone"></dd>
 
-                <dt>Pickup</dt>
-                <dd id="details-pickup"></dd>
+            <dt>Pickup</dt>
+            <dd id="detail-pickup"></dd>
 
-                <dt>Delivery</dt>
-                <dd id="details-delivery"></dd>
+            <dt>Deliver to</dt>
+            <dd>
+                <span id="detail-delivery"></span>
+                <span id="detail-verified" class="muted"></span>
+            </dd>
 
-                <dt>Address check</dt>
-                <dd id="details-verified"></dd>
+            <dt>Package</dt>
+            <dd id="detail-package"></dd>
 
-                <dt>Package</dt>
-                <dd id="details-package"></dd>
+            <dt>Priority</dt>
+            <dd id="detail-priority"></dd>
 
-                <dt>Priority</dt>
-                <dd id="details-priority"></dd>
+            <dt>Notes</dt>
+            <dd id="detail-notes"></dd>
 
-                <dt>Courier</dt>
-                <dd id="details-courier"></dd>
+            <dt>Courier</dt>
+            <dd id="detail-courier"></dd>
 
-                <dt>Notes</dt>
-                <dd id="details-notes"></dd>
-            </dl>
+            <dt>Created</dt>
+            <dd id="detail-created"></dd>
+        </dl>
 
-            <a id="details-map-link" class="map-link hidden" href="#" target="_blank" rel="noopener">
-                Open on map
-            </a>
-        </div>
+        <a id="detail-map" class="map-link" href="#" target="_blank" rel="noopener">Open on map</a>
 
-        <h3>Status History</h3>
-        <ol id="details-timeline" class="timeline"></ol>
+        <h3>Status history</h3>
+        <ol id="detail-history" class="timeline"></ol>
+
+        <p id="detail-message" aria-live="polite"></p>
 
     </div>
 </div>
 
 
-<div id="edit-modal" class="modal">
+<div id="order-edit-modal" class="modal">
     <div class="modal-content">
 
         <div class="panel-header">
             <h2>Edit Order <span id="edit-order-number" class="order-number"></span></h2>
-            <button type="button" class="btn-small btn-secondary" data-close="edit-modal">Close</button>
+            <button type="button" class="btn-small btn-secondary" data-close="order-edit-modal">Close</button>
         </div>
 
-        <form id="edit-form">
+        <form id="order-edit-form">
 
-            <input id="edit-id" name="id" type="hidden">
+            <input id="edit-order-id" name="orderId" type="hidden">
 
             <label for="edit-customer-name">Customer Name</label>
             <input id="edit-customer-name" name="customerName" type="text" minlength="2" required>
@@ -278,13 +204,13 @@
             <input id="edit-customer-phone" name="customerPhone" type="tel" required>
 
             <label for="edit-pickup-address">Pickup Address</label>
-            <input id="edit-pickup-address" name="pickupAddress" type="text" required>
+            <input id="edit-pickup-address" name="pickupAddress" type="text" minlength="5" required>
 
             <label for="edit-delivery-address">Delivery Address</label>
-            <input id="edit-delivery-address" name="deliveryAddress" type="text" required>
+            <input id="edit-delivery-address" name="deliveryAddress" type="text" minlength="5" required>
 
             <label for="edit-package-details">Package Details</label>
-            <input id="edit-package-details" name="packageDetails" type="text" required>
+            <input id="edit-package-details" name="packageDetails" type="text" minlength="2" required>
 
             <label for="edit-priority">Priority</label>
             <select id="edit-priority" name="priority" required>
@@ -293,13 +219,13 @@
             </select>
 
             <label for="edit-notes">Notes</label>
-            <textarea id="edit-notes" name="notes"></textarea>
+            <textarea id="edit-notes" name="notes" maxlength="500"></textarea>
 
             <button type="submit">Save Changes</button>
 
         </form>
 
-        <p id="edit-message" aria-live="polite"></p>
+        <p id="edit-order-message" aria-live="polite"></p>
 
     </div>
 </div>
@@ -309,24 +235,22 @@
     <div class="modal-content">
 
         <div class="panel-header">
-            <h2>Assign Courier</h2>
+            <h2>Assign Courier: <span id="assign-order-number" class="order-number"></span></h2>
             <button type="button" class="btn-small btn-secondary" data-close="assign-modal">Close</button>
         </div>
-
-        <p>Order <span id="assign-order-number" class="order-number"></span></p>
 
         <form id="assign-form">
 
             <input id="assign-order-id" name="orderId" type="hidden">
 
-            <label for="assign-courier">Available Couriers</label>
+            <label for="assign-courier">Available couriers</label>
             <select id="assign-courier" name="courierId" required>
                 <option value="">Select courier</option>
             </select>
 
             <div class="btn-group">
                 <button type="submit">Assign</button>
-                <button type="button" id="unassign-button" class="btn-danger">Unassign</button>
+                <button type="button" id="unassign-button" class="btn-danger hidden">Unassign current courier</button>
             </div>
 
         </form>
@@ -340,6 +264,7 @@
 <script src="js/config.js" defer></script>
 <script src="js/api.js" defer></script>
 <script src="js/auth.js" defer></script>
+<script src="js/assignment.js" defer></script>
 <script src="js/orders.js" defer></script>
 
 </body>
