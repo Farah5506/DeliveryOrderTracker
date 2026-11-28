@@ -10,7 +10,7 @@ WEB=http://localhost:4566/dot-web
 
 call() {   # call METHOD PATH [curl args] -> sets CODE and BODY
   local method=$1 path=$2; shift 2
-  BODY=$(curl -s -X "$method" -o /dev/stdout -w '\n%{http_code}' --max-time 30 "$@" "$API_URL$path")
+  BODY=$(curl -s -X "$method" -w '\n%{http_code}' --max-time 30 "$@" "$API_URL$path")
   CODE=$(echo "$BODY" | tail -n1)
   BODY=$(echo "$BODY" | sed '$d')
 }
