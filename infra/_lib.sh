@@ -15,7 +15,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.." || exit 1
 mkdir -p out
 
 check_floci() {
-  if ! curl -s -o /dev/null http://localhost:4566/_floci/health; then
+  if ! aws sts get-caller-identity > /dev/null 2>&1; then
     echo "Floci is not running. Start Docker Desktop, then:"
     echo "  docker compose -f infra/floci/docker-compose.yml up -d"
     exit 1
